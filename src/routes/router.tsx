@@ -5,7 +5,7 @@ import Classrooms from "../pages/Classrooms";
 import Dashboard from "../pages/Dashboard";
 import Students from "../pages/Students";
 import Subjects from "../pages/Subjects";
-import Teachers from "../pages/Teachers";
+import Teachers from "../pages/teachers/Teachers";
 type Props = {};
 
 const Router = (props: Props) => {
