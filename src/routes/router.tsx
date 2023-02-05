@@ -1,9 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "../layout";
-import Classrooms from "../pages/Classrooms";
+import Classrooms from "../pages/classrooms/Classrooms";
 import Dashboard from "../pages/Dashboard";
-import Students from "../pages/Students";
+import Students from "../pages/students/Students";
 import Subjects from "../pages/Subjects";
 import Teachers from "../pages/teachers/Teachers";
 type Props = {};
