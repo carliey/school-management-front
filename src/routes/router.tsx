@@ -4,7 +4,7 @@ import Layout from "../layout";
 import Classrooms from "../pages/classrooms/Classrooms";
 import Dashboard from "../pages/Dashboard";
 import Students from "../pages/students/Students";
-import Subjects from "../pages/Subjects";
+import Subjects from "../pages/subjects/Subjects";
 import Teachers from "../pages/teachers/Teachers";
 type Props = {};
 
