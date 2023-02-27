@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Layout from "../layout";
-import { logout, selectCurrentUser } from "../pages/auth/authSlice";
+import { login, logout, selectCurrentUser } from "../pages/auth/authSlice";
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/Signup";
 import Classrooms from "../pages/classrooms/Classrooms";
@@ -22,9 +22,11 @@ type ProtectedRoute = {
 
 const ProtectedRoute = ({ user, allowedRoles, children }: ProtectedRoute) => {
   //wrapper component for protected routes
+
+  console.log("user", user, allowedRoles);
   const dispatch = useAppDispatch();
   const isAuth = !!user;
-  const userRoles = user?.roles?.map((role: any) => role.name);
+  const userRoles = user?.roles?.map((role: string) => role);
   const hasRequiredRole = userRoles?.filter((role: any) =>
     allowedRoles.includes(role)
   )?.length
@@ -49,8 +51,25 @@ const ProtectedRoute = ({ user, allowedRoles, children }: ProtectedRoute) => {
 };
 
 const Router = (props: Props) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
   console.log("user", user);
+
+  useEffect(() => {
+    //log the user back in with local storage data on login
+    const credentials = localStorage.getItem("credentials");
+    if (credentials) {
+      dispatch(login(JSON.parse(credentials)));
+    }
+  }, []);
+
+  useEffect(() => {
+    //route the user to dashboard, if a logged in user tries to access signin page
+    if (!!user && location.pathname === "/signin") {
+      navigate("/");
+    }
+  }, [location, user]);
 
   return (
     <Routes>

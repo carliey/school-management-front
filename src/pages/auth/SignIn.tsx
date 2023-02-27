@@ -66,8 +66,7 @@ export default function SignIn() {
         password: data.password,
       }).unwrap();
       console.log("res", res);
-      // dispatch(login(res));
-      // navigate("/");
+      dispatch(login(res));
     } catch (error) {
       console.log(error);
     }

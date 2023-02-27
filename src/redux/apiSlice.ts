@@ -5,23 +5,18 @@ import type {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
-
-type LocalStorageType = {
-  token: string;
-  user: string;
-};
+import { logout } from "../pages/auth/authSlice";
 
 const api_url = import.meta.env.VITE_API_URL;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: api_url,
+  baseUrl: "http://localhost:5050",
   prepareHeaders: (headers, { getState }) => {
     // const token = (getState() as RootState).auth.token;
 
     const credentials = localStorage.getItem("credentials");
     if (credentials) {
       const { token } = JSON.parse(credentials);
-      // If we have a token set in state, let's assume that we should be passing it.
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
       }
@@ -41,8 +36,8 @@ const baseQuerywithAuth: BaseQueryFn<
   if (result.error && result.error.status === 401) {
     // unauthorised
     alert("Error unauthorised");
-    // dispactch logout
-    // reset state
+    api.dispatch(logout()); // logout user
+    api.dispatch(apiSlice.util.resetApiState());
   }
 
   return result;

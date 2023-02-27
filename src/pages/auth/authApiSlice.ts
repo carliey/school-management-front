@@ -3,10 +3,7 @@ import { User } from "../../types/types";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<
-      User,
-      { username: FormDataEntryValue; password: FormDataEntryValue }
-    >({
+    login: builder.mutation({
       query: (values) => ({
         url: "/signin",
         method: "POST",
