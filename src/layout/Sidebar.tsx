@@ -7,6 +7,10 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { NavLink } from "react-router-dom";
+import { Button } from "@mui/material";
+import { PowerOff } from "@mui/icons-material";
+import { useAppDispatch } from "../redux/store";
+import { logout } from "../pages/auth/authSlice";
 
 type Props = {
   drawerWidth: number;
@@ -14,6 +18,8 @@ type Props = {
 };
 
 const Sidebar = ({ drawerWidth, menuItems }: Props) => {
+  const dispatch = useAppDispatch();
+
   return (
     <Drawer
       sx={{
@@ -48,6 +54,15 @@ const Sidebar = ({ drawerWidth, menuItems }: Props) => {
           </ListItem>
         ))}
       </List>
+      <Button
+        variant="contained"
+        color="error"
+        endIcon={<PowerOff />}
+        sx={{ mt: 4 }}
+        onClick={() => dispatch(logout())}
+      >
+        Logout
+      </Button>
     </Drawer>
   );
 };

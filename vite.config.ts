@@ -7,6 +7,6 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [react()],
-    __APP_ENV__: env.REACT_APP_API_URL,
+    ENV_URL: env.REACT_APP_API_URL,
   };
 });

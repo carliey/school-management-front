@@ -11,8 +11,10 @@ type LocalStorageType = {
   user: string;
 };
 
+const api_url = import.meta.env.VITE_API_URL;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://localhost:5050",
+  baseUrl: api_url,
   prepareHeaders: (headers, { getState }) => {
     // const token = (getState() as RootState).auth.token;
     const { token } = JSON.parse(localStorage.getItem("credentials") || "");
