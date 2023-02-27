@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "../layout";
+import SignIn from "../pages/auth/SignIn";
+import SignUp from "../pages/auth/Signup";
 import Classrooms from "../pages/classrooms/Classrooms";
 import Dashboard from "../pages/Dashboard";
 import Students from "../pages/students/Students";
@@ -11,6 +13,9 @@ type Props = {};
 const Router = (props: Props) => {
   return (
     <Routes>
+      <Route path="signin" element={<SignIn />} />
+      <Route path="signup" element={<SignUp />} />
+
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="students" element={<Students />} />

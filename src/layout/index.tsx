@@ -4,28 +4,36 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import Appbar from "./Appbar";
 import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
+import {
+  Dashboard,
+  Group,
+  Groups,
+  MeetingRoom,
+  MenuBook,
+  TableRows,
+} from "@mui/icons-material";
 
 function Layout() {
   const drawerWidth = 240;
   const menuItems = [
     {
-      icon: <InboxIcon />,
+      icon: <Dashboard />,
       text: "Dashboard",
     },
     {
-      icon: <InboxIcon />,
+      icon: <Group />,
       text: "Teachers",
     },
     {
-      icon: <InboxIcon />,
+      icon: <MeetingRoom />,
       text: "Classrooms",
     },
     {
-      icon: <InboxIcon />,
+      icon: <Groups />,
       text: "Students",
     },
     {
-      icon: <InboxIcon />,
+      icon: <MenuBook />,
       text: "Subjects",
     },
   ];
