@@ -17,11 +17,14 @@ const baseQuery = fetchBaseQuery({
   baseUrl: api_url,
   prepareHeaders: (headers, { getState }) => {
     // const token = (getState() as RootState).auth.token;
-    const { token } = JSON.parse(localStorage.getItem("credentials") || "");
 
-    // If we have a token set in state, let's assume that we should be passing it.
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+    const credentials = localStorage.getItem("credentials");
+    if (credentials) {
+      const { token } = JSON.parse(credentials);
+      // If we have a token set in state, let's assume that we should be passing it.
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
     }
 
     return headers;

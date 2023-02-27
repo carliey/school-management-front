@@ -60,10 +60,14 @@ export default function SignIn() {
     password: FormDataEntryValue;
   }) => {
     try {
-      const res = await loginRequest(data).unwrap();
-      console.log(res);
-      dispatch(login(res));
-      navigate("/");
+      console.log("data", data);
+      const res = await loginRequest({
+        username: data.username,
+        password: data.password,
+      }).unwrap();
+      console.log("res", res);
+      // dispatch(login(res));
+      // navigate("/");
     } catch (error) {
       console.log(error);
     }
