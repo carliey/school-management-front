@@ -15,17 +15,14 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Add } from "@mui/icons-material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import { Button } from "@mui/material";
 
 interface Data {
   id: number;
-  name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   phone: string;
   classroom: string;
@@ -85,8 +82,12 @@ const headCells: readonly HeadCell[] = [
     label: "id",
   },
   {
-    id: "name",
-    label: "Name",
+    id: "firstname",
+    label: "Firstname",
+  },
+  {
+    id: "lastname",
+    label: "Lastname",
   },
   {
     id: "email",
@@ -249,7 +250,7 @@ export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = rows.map((n) => n.firstname);
       setSelected(newSelected);
       return;
     }
@@ -318,17 +319,17 @@ export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row.firstname);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.firstname)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.firstname}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -341,7 +342,8 @@ export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
                         />
                       </TableCell>
                       <TableCell align="left">{row.id}</TableCell>
-                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.firstname}</TableCell>
+                      <TableCell>{row.lastname}</TableCell>
                       <TableCell align="left">{row.email}</TableCell>
                       <TableCell align="left">{row.phone}</TableCell>
                       <TableCell align="left">{row.classroom}</TableCell>
