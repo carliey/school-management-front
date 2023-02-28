@@ -1,5 +1,5 @@
 import { apiSlice } from "../../redux/apiSlice";
-import { User } from "../../types/types";
+import { Teacher, User } from "../../types/types";
 
 const apiSliceWithTags = apiSlice.enhanceEndpoints({
   addTagTypes: ["Teacher"],
@@ -11,7 +11,7 @@ export const teacherApiSlice = apiSliceWithTags.injectEndpoints({
       query: () => "/api/teachers",
       providesTags: ["Teacher"],
     }),
-    createTeacher: builder.mutation({
+    createTeacher: builder.mutation<any, Teacher>({
       query: (values) => ({
         url: "/api/teacher/create",
         method: "POST",
@@ -19,7 +19,7 @@ export const teacherApiSlice = apiSliceWithTags.injectEndpoints({
       }),
       invalidatesTags: ["Teacher"],
     }),
-    updateTeacher: builder.mutation({
+    updateTeacher: builder.mutation<any, { id: number; body: Teacher }>({
       query: (values) => ({
         url: `/api/teacher/update/${values.id}`,
         method: "PUT",
@@ -27,7 +27,7 @@ export const teacherApiSlice = apiSliceWithTags.injectEndpoints({
       }),
       invalidatesTags: ["Teacher"],
     }),
-    deleteTeacher: builder.mutation({
+    deleteTeacher: builder.mutation<any, Teacher>({
       query: (values) => ({
         url: `/api/teacher/delete/${values.id}`,
         method: "DELETE",

@@ -18,6 +18,7 @@ import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Add } from "@mui/icons-material";
 import { visuallyHidden } from "@mui/utils";
+import { Classroom } from "../../types/types";
 
 interface Data {
   id: number;
@@ -232,6 +233,7 @@ interface ComponentProps {
   rows: Data[];
   toggleAddNew: () => void;
 }
+
 export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
@@ -313,7 +315,7 @@ export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={rows?.length}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))

@@ -1,13 +1,12 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Grid, TextField, Box, Select, MenuItem, Stack } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { Teacher } from "../../types/types";
+import { useCreateTeacherMutation } from "./teachersApiSlice";
+import { toast } from "react-hot-toast";
 
 interface ComponentProps {
   open: boolean;
@@ -19,35 +18,49 @@ const validationSchema = yup.object({
     .string()
     .email("Enter a valid email")
     .required("Email is required"),
-  classroom: yup.string().required("Email is required"),
+  // classroom: yup.string().required("Email is required"),
 });
 
 export default function CreateTeacherModal({
   open,
   handleClose,
 }: ComponentProps) {
+  const [createTeacher, { isLoading }] = useCreateTeacherMutation();
+
   const formik = useFormik({
     initialValues: {
       firstname: "",
-      middlename: "",
       lastname: "",
       email: "",
-      phone: "",
+      phone: 0,
       gender: "",
-      classroom: "",
+      classroom: [],
       password: "",
+      roles: ["teacher"],
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      handleCreateTeacher(values);
     },
   });
-  const classrooms = [
-    { id: 1, name: "primary one" },
-    { id: 2, name: "primary two" },
-    { id: 3, name: "primary three" },
-  ];
+
+  const handleCreateTeacher = async (data: Teacher) => {
+    toast.loading("Loading");
+    try {
+      const res = await createTeacher(data).unwrap();
+      if (res.error) {
+        throw res.error;
+      }
+      console.log(res.status);
+      toast.success("teacher created successfully");
+    } catch (error) {
+      toast.error("error creating teacher");
+      console.log(error);
+    }
+  };
+  const classrooms: any[] = [];
+
   return (
     <div>
       <Dialog
@@ -61,6 +74,7 @@ export default function CreateTeacherModal({
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <TextField
+                fullWidth
                 id="firstname"
                 name="firstname"
                 label="First name *"
@@ -73,24 +87,10 @@ export default function CreateTeacherModal({
                 helperText={formik.touched.firstname && formik.errors.firstname}
               />
             </Grid>
+
             <Grid item xs={12} md={6} lg={4}>
               <TextField
-                id="middlename"
-                name="middlename"
-                label="Middle name"
-                variant="outlined"
-                value={formik.values.middlename}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.middlename && Boolean(formik.errors.middlename)
-                }
-                helperText={
-                  formik.touched.middlename && formik.errors.middlename
-                }
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <TextField
+                fullWidth
                 id="lastname"
                 name="lastname"
                 label="Last name *"
@@ -105,6 +105,7 @@ export default function CreateTeacherModal({
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
               <TextField
+                fullWidth
                 id="phone"
                 name="phone"
                 label="Phone *"
@@ -115,17 +116,7 @@ export default function CreateTeacherModal({
                 helperText={formik.touched.phone && formik.errors.phone}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <TextField
-                id="email"
-                label="Email "
-                variant="outlined"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-            </Grid>
+
             <Grid item xs={12} md={6} lg={4}>
               <Select
                 displayEmpty
@@ -143,6 +134,20 @@ export default function CreateTeacherModal({
                 <MenuItem value="female">Female</MenuItem>
               </Select>
             </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="email"
+                label="Email "
+                variant="outlined"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+            </Grid>
+
             <Grid item xs={12}>
               <Select
                 displayEmpty
