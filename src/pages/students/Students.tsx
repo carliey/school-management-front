@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CreateStudentModal from "./CreateStudentModal";
 import StudentsTable from "./StudentsTable";
 import { Box, Select, MenuItem } from "@mui/material";
+import { useGetClassroomsQuery } from "../classrooms/classroomApiSlice";
 
 type Props = {};
 const classrooms = [
@@ -9,6 +10,8 @@ const classrooms = [
   { id: 2, name: "primary two" },
   { id: 3, name: "primary three" },
 ];
+
+const { data: classroomData, isLoading } = useGetClassroomsQuery();
 
 const students = [
   {
