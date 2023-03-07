@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import React, { useMemo, useState } from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  Stack,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,24 +15,37 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import AddClassModal from "./AddClassModal";
+import { useGetClassroomsQuery } from "./classroomApiSlice";
+import { Classroom, Teacher } from "../../types/types";
+import { useGetTeachersQuery } from "../teachers/teachersApiSlice";
+import { Delete, Edit } from "@mui/icons-material";
 
 type Props = {};
 
 const Classrooms = (props: Props) => {
   const [openAddNew, setOpenAddNew] = useState(false);
-  const rows = [
-    { name: "Primary one", teacher: "mr A" },
-    { name: "Primary two", teacher: "mr b" },
-    { name: "Primary three", teacher: "mr c" },
-    { name: "Primary four", teacher: "mr d" },
-    { name: "Primary five", teacher: "mr e" },
-    { name: "Primary six", teacher: "mr f" },
-  ];
+  const [focusedSubject, setFocusedSubject] = useState<Classroom | null>(null);
+  const { data, isLoading } = useGetClassroomsQuery();
+  const { data: teachers } = useGetTeachersQuery();
+
+  const classrooms = useMemo(() => {
+    if (data?.data?.length) {
+      return data.data;
+    }
+    return [];
+  }, [data]);
+
+  const handleClose = () => {
+    setOpenAddNew(false);
+    setFocusedSubject(null);
+  };
+
   return (
     <Box>
       <AddClassModal
         open={openAddNew}
-        handleClose={() => setOpenAddNew(false)}
+        handleClose={handleClose}
+        focusedSubject={focusedSubject}
       />
       <Box
         display="flex"
@@ -47,23 +67,47 @@ const Classrooms = (props: Props) => {
           <TableHead>
             <TableRow>
               <TableCell>S/N</TableCell>
-              <TableCell align="center">Class</TableCell>
-              <TableCell align="center">Teacher</TableCell>
+              <TableCell align="left">Class</TableCell>
+              <TableCell align="left">Teacher</TableCell>
               <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, i) => (
+            {classrooms.map((classroom: Classroom, i: number) => (
               <TableRow
                 key={i}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell component="th" scope="row">
-                  {i + 1}
+                <TableCell scope="row">{i + 1}</TableCell>
+                <TableCell align="left">{classroom.name}</TableCell>
+                <TableCell align="left">
+                  {teachers?.data?.find(
+                    (item: Teacher) => item.id === classroom.teacher_id
+                  )?.firstname +
+                    " " +
+                    teachers?.data?.find(
+                      (item: Teacher) => item.id === classroom.teacher_id
+                    )?.lastname}
                 </TableCell>
-                <TableCell align="center">{row.name}</TableCell>
-                <TableCell align="center">{row.teacher}</TableCell>
-                <TableCell align="right">edit/delete</TableCell>
+                <TableCell align="right">
+                  <Stack
+                    direction="row"
+                    gap={2}
+                    sx={{ "&>*": { cursor: "pointer" } }}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setFocusedSubject(classroom);
+                        setOpenAddNew(true);
+                      }}
+                    >
+                      <Edit color="primary" />
+                    </IconButton>
+                    <IconButton>
+                      <Delete color="error" />
+                    </IconButton>
+                  </Stack>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

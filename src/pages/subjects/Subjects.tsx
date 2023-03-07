@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { useMemo, useState } from "react";
+import { Box, Button, IconButton, LinearProgress, Stack } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,34 +8,36 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CreateSubjectModal from "./CreateSubjectModal";
+import { useGetSubjectsQuery } from "./subjectApiSlice";
+import { Subject } from "../../types/types";
+import { Delete, Edit } from "@mui/icons-material";
 
 type Props = {};
 
 const Subjects = (props: Props) => {
   const [openAddNew, setOpenAddNew] = useState(false);
-  const subjects = [
-    {
-      id: 1,
-      name: "maths",
-      description:
-        "Eu eu non tempor eu sunt do veniam ad ex in velit deserunt elit.",
-    },
-    {
-      id: 2,
-      name: "english",
-      description: "Consequat anim labore amet amet eiusmod.",
-    },
-    {
-      id: 3,
-      name: "science",
-      description: "Ex laborum consequat culpa occaecat esse voluptate.",
-    },
-  ];
+  const [focusedSubject, setFocusedSubject] = useState<Subject | null>(null);
+  const { data, isLoading } = useGetSubjectsQuery();
+
+  const subjects = useMemo(() => {
+    if (data?.data?.length) {
+      return data.data;
+    }
+    return [];
+  }, [data]);
+
+  const handleClose = () => {
+    setOpenAddNew(false);
+    setFocusedSubject(null);
+  };
+
   return (
     <Box>
+      {isLoading && <LinearProgress />}
       <CreateSubjectModal
         open={openAddNew}
-        handleClose={() => setOpenAddNew(false)}
+        handleClose={handleClose}
+        focusedSubject={focusedSubject}
       />
       <Box
         display="flex"
@@ -63,17 +65,33 @@ const Subjects = (props: Props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {subjects.map((row, i) => (
+            {subjects.map((row: Subject, i: number) => (
               <TableRow
                 key={i}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell component="th" scope="row">
-                  {i + 1}
-                </TableCell>
+                <TableCell scope="row">{i + 1}</TableCell>
                 <TableCell align="left">{row.name}</TableCell>
                 <TableCell align="left">{row.description}</TableCell>
-                <TableCell align="right">edit/delete</TableCell>
+                <TableCell align="right">
+                  <Stack
+                    direction="row"
+                    gap={2}
+                    sx={{ "&>*": { cursor: "pointer" } }}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setFocusedSubject(row);
+                        setOpenAddNew(true);
+                      }}
+                    >
+                      <Edit color="primary" />
+                    </IconButton>
+                    <IconButton>
+                      <Delete color="error" />
+                    </IconButton>
+                  </Stack>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

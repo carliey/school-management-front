@@ -1,11 +1,11 @@
 export interface User {
-  id: string;
+  id: number | undefined;
   name: string;
   email: string;
 }
 
 export interface Teacher {
-  id?: number;
+  id?: number | undefined;
   firstname: string;
   lastname: string;
   gender: string;
@@ -18,7 +18,14 @@ export interface Teacher {
 
 export interface Classroom {
   created_at?: string;
-  id?: number;
+  id?: number | undefined;
   name: string;
   teacher_id: number;
+}
+
+export interface Subject {
+  id?: number | undefined;
+  created_at?: string;
+  name: string;
+  description?: string;
 }
