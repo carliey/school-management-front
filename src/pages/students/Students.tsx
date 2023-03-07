@@ -1,17 +1,11 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import CreateStudentModal from "./CreateStudentModal";
 import StudentsTable from "./StudentsTable";
 import { Box, Select, MenuItem } from "@mui/material";
 import { useGetClassroomsQuery } from "../classrooms/classroomApiSlice";
+import { Classroom } from "../../types/types";
 
 type Props = {};
-const classrooms = [
-  { id: 1, name: "primary one" },
-  { id: 2, name: "primary two" },
-  { id: 3, name: "primary three" },
-];
-
-const { data: classroomData, isLoading } = useGetClassroomsQuery();
 
 const students = [
   {
@@ -31,17 +25,28 @@ const students = [
 const Students = (props: Props) => {
   const [classroom, setClassroom] = useState("Primary one");
   const [openAddNew, setOpenAddNew] = useState(false);
+  const { data: classroomData, isLoading } = useGetClassroomsQuery();
+
+  const classrooms = useMemo(() => {
+    return classroomData?.data?.map((classroom: Classroom) => classroom) || [];
+  }, [classroomData]);
+  console.log("classrooms", classroomData);
 
   const toggleAddNew = () => {
     setOpenAddNew((prev) => !prev);
   };
+
   return (
     <Box>
-      <CreateStudentModal open={openAddNew} handleClose={toggleAddNew} />
+      <CreateStudentModal
+        open={openAddNew}
+        handleClose={toggleAddNew}
+        classrooms={classrooms}
+      />
       <Box textAlign={"center"} my={1}>
         <Select displayEmpty defaultValue={""}>
           <MenuItem value="">Select Classroom</MenuItem>
-          {classrooms.map((item) => (
+          {classrooms?.map((item) => (
             <MenuItem key={item.id} value={item.name}>
               {item.name}
             </MenuItem>

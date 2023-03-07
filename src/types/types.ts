@@ -21,9 +21,8 @@ export interface Student {
   firstname: string;
   lastname: string;
   gender: string;
-  phone: number;
   middlename?: string;
-  classroom_id?: number;
+  classroom_id?: number | null;
   soo: string;
   dob: string;
 }
