@@ -17,14 +17,19 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Add } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import { visuallyHidden } from "@mui/utils";
+import { Stack } from "@mui/material";
+import { Classroom } from "../../types/types";
 
 interface Data {
   id: number;
-  name: string;
-  soo: string;
+  firstname: string;
+  lastname: string;
   gender: string;
+  classroom_id: number;
+  soo: string;
+  dob: string;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -81,17 +86,20 @@ const headCells: readonly HeadCell[] = [
     label: "id",
   },
   {
-    id: "name",
-    label: "Name",
+    id: "firstname",
+    label: "Firstname",
+  },
+  {
+    id: "lastname",
+    label: "Lastname",
+  },
+  {
+    id: "gender",
+    label: "Gender",
   },
   {
     id: "soo",
     label: "SOO",
-  },
-
-  {
-    id: "gender",
-    label: "Gender",
   },
 ];
 
@@ -156,7 +164,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell padding="checkbox">Actions</TableCell>
+        <TableCell padding="checkbox" align="center">
+          Actions
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -165,7 +175,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
   toggleAddNew: () => void;
-  classroom: string;
+  classroom: number | string;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -201,7 +211,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          {classroom} Students
+          {Boolean(classroom)
+            ? `${classroom} Students`
+            : "Please select classroom"}
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -211,7 +223,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           </Button>
         </Tooltip>
       ) : (
-        <Tooltip title="Create New Student">
+        <Tooltip title="Create New Data">
           <IconButton>
             <Add onClick={toggleAddNew} />
           </IconButton>
@@ -224,18 +236,23 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 interface ComponentProps {
   rows: Data[];
   toggleAddNew: () => void;
-  classroom: string;
+  classroom: number;
+  allClassrooms: Classroom[];
 }
-export default function StudentsTable({
+export default function DatasTable({
   rows,
   toggleAddNew,
   classroom,
+  allClassrooms,
 }: ComponentProps) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const classroomName =
+    allClassrooms.find((item) => item.id === classroom)?.name || 0;
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -248,7 +265,7 @@ export default function StudentsTable({
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = rows.map((n) => n.firstname);
       setSelected(newSelected);
       return;
     }
@@ -298,7 +315,7 @@ export default function StudentsTable({
         <EnhancedTableToolbar
           numSelected={selected.length}
           toggleAddNew={toggleAddNew}
-          classroom={classroom}
+          classroom={classroomName}
         />
         <TableContainer>
           <Table
@@ -318,17 +335,17 @@ export default function StudentsTable({
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row.firstname);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.firstname)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.firstname}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -341,10 +358,29 @@ export default function StudentsTable({
                         />
                       </TableCell>
                       <TableCell align="left">{row.id}</TableCell>
-                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.firstname}</TableCell>
+                      <TableCell>{row.lastname}</TableCell>
                       <TableCell align="left">{row.gender}</TableCell>
                       <TableCell align="left">{row.soo}</TableCell>
-                      <TableCell align="right">Edit Delete</TableCell>
+                      <TableCell align="right">
+                        <Stack
+                          direction="row"
+                          gap={2}
+                          sx={{ "&>*": { cursor: "pointer" } }}
+                        >
+                          <IconButton
+                            onClick={() => {
+                              // setFocusedSubject(classroom);
+                              // setOpenAddNew(true);
+                            }}
+                          >
+                            <Edit color="primary" />
+                          </IconButton>
+                          <IconButton>
+                            <Delete color="error" />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

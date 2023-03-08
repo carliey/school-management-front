@@ -17,12 +17,12 @@ export interface Teacher {
 }
 
 export interface Student {
-  id?: any;
+  id?: number;
   firstname: string;
   lastname: string;
   gender: string;
   middlename?: string;
-  classroom_id?: number | null;
+  classroom_id: number;
   soo: string;
   dob: string;
 }

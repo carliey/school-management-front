@@ -8,7 +8,7 @@ const apiSliceWithTags = apiSlice.enhanceEndpoints({
 export const studentApiSlice = apiSliceWithTags.injectEndpoints({
   endpoints: (builder) => ({
     getStudentsByClassroom: builder.query<any, number>({
-      query: (classroom_id) => `/api/students${classroom_id}`,
+      query: (classroom_id) => `/api/students/${classroom_id}`,
       providesTags: ["Students"],
     }),
     createStudent: builder.mutation<any, Student>({
