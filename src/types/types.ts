@@ -11,8 +11,8 @@ export interface Teacher {
   gender: string;
   phone: number;
   email: string;
-  roles: string[];
-  password: string;
+  roles?: string[];
+  password?: string;
   classroom?: Classroom[];
 }
 

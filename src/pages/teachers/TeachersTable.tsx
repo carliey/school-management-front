@@ -16,17 +16,19 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Add } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import { visuallyHidden } from "@mui/utils";
-import { Classroom } from "../../types/types";
+import { Classroom, Teacher } from "../../types/types";
+import { Stack } from "@mui/material";
 
 interface Data {
   id: number;
   firstname: string;
   lastname: string;
   email: string;
-  phone: string;
+  phone: number;
   classroom: string;
+  gender: string;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -232,9 +234,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 interface ComponentProps {
   rows: Data[];
   toggleAddNew: () => void;
+  setFocusedTeacher: React.Dispatch<React.SetStateAction<Data | null>>;
 }
 
-export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
+export default function TeachersTable({
+  rows,
+  toggleAddNew,
+  setFocusedTeacher,
+}: ComponentProps) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -349,7 +356,26 @@ export default function TeachersTable({ rows, toggleAddNew }: ComponentProps) {
                       <TableCell align="left">{row.email}</TableCell>
                       <TableCell align="left">{row.phone}</TableCell>
                       <TableCell align="left">{row.classroom}</TableCell>
-                      <TableCell align="right">Edit Delete</TableCell>
+                      <TableCell align="right">
+                        <Stack
+                          direction="row"
+                          gap={2}
+                          sx={{ "&>*": { cursor: "pointer" } }}
+                        >
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFocusedTeacher(row);
+                              toggleAddNew();
+                            }}
+                          >
+                            <Edit color="primary" />
+                          </IconButton>
+                          <IconButton>
+                            <Delete color="error" />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

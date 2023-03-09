@@ -4,13 +4,16 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Grid, TextField, Box, Select, MenuItem, Stack } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Teacher } from "../../types/types";
+import { Classroom, Teacher } from "../../types/types";
 import { useCreateTeacherMutation } from "./teachersApiSlice";
 import { toast } from "react-hot-toast";
+import { useGetClassroomsQuery } from "../classrooms/classroomApiSlice";
+import { useMemo } from "react";
 
 interface ComponentProps {
   open: boolean;
   handleClose: () => void;
+  focusedTeacher: Teacher | null;
 }
 
 const validationSchema = yup.object({
@@ -24,24 +27,33 @@ const validationSchema = yup.object({
 export default function CreateTeacherModal({
   open,
   handleClose,
+  focusedTeacher,
 }: ComponentProps) {
   const [createTeacher, { isLoading }] = useCreateTeacherMutation();
+  const { data: classroomsRes } = useGetClassroomsQuery();
+  const classrooms: any[] = useMemo(() => {
+    return classroomsRes?.data?.length ? classroomsRes.data : [];
+  }, []);
 
   const formik = useFormik({
     initialValues: {
-      firstname: "",
-      lastname: "",
-      email: "",
-      phone: 0,
-      gender: "",
-      classroom: [],
-      password: "",
+      firstname: focusedTeacher?.firstname || "",
+      lastname: focusedTeacher?.lastname || "",
+      email: focusedTeacher?.email || "",
+      phone: focusedTeacher?.phone || 0,
+      gender: focusedTeacher?.gender || "",
+      // classroom: focusedTeacher?.classroom || [],
+      // password: focusedTeacher?.password || "",
       roles: ["teacher"],
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      handleCreateTeacher(values);
+      if (Boolean(focusedTeacher)) {
+        handleUpdateTeacher(values);
+      } else {
+        handleCreateTeacher(values);
+      }
     },
   });
 
@@ -59,7 +71,21 @@ export default function CreateTeacherModal({
       console.log(error);
     }
   };
-  const classrooms: any[] = [];
+
+  const handleUpdateTeacher = async (data: Teacher) => {
+    toast.loading("Loading");
+    try {
+      // const res = await createTeacher(data).unwrap();
+      // if (res.error) {
+      //   throw res.error;
+      // }
+      // console.log(res.status);
+      toast.success("teacher updated successfully");
+    } catch (error) {
+      toast.error("error updating teacher");
+      console.log(error);
+    }
+  };
 
   return (
     <div>
@@ -69,10 +95,12 @@ export default function CreateTeacherModal({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Create Teacher</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {Boolean(focusedTeacher) ? "Update" : "Create"} Teacher
+        </DialogTitle>
         <Box component="form" onSubmit={formik.handleSubmit} p={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 id="firstname"
@@ -88,7 +116,7 @@ export default function CreateTeacherModal({
               />
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 id="lastname"
@@ -103,7 +131,7 @@ export default function CreateTeacherModal({
                 helperText={formik.touched.lastname && formik.errors.lastname}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={6}>
               <TextField
                 fullWidth
                 id="phone"
@@ -117,7 +145,7 @@ export default function CreateTeacherModal({
               />
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={6}>
               <Select
                 displayEmpty
                 fullWidth
@@ -148,7 +176,7 @@ export default function CreateTeacherModal({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Select
                 displayEmpty
                 fullWidth
@@ -163,16 +191,16 @@ export default function CreateTeacherModal({
                 }
               >
                 <MenuItem value="">Select Classroom</MenuItem>
-                {classrooms.map((item) => (
-                  <MenuItem key={item.id} value={item.name}>
+                {classrooms.map((item: Classroom) => (
+                  <MenuItem key={item.id} value={item.id}>
                     {item.name}
                   </MenuItem>
                 ))}
               </Select>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Stack gap={2} direction="row" justifyContent={"flex-end"} mt={2}>
-            <Button variant="contained" color="error">
+            <Button variant="contained" color="error" onClick={handleClose}>
               Cancel
             </Button>
             <Button type="submit" variant="contained" color="primary">

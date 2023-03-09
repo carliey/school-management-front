@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, LinearProgress } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Teacher } from "../../types/types";
 import CreateTeacherModal from "./CreateTeacherModal";
@@ -9,8 +9,9 @@ type Props = {};
 
 const Teachers = (props: Props) => {
   const [openAddNew, setOpenAddNew] = useState(false);
+  const [focusedTeacher, setFocusedTeacher] = useState<Teacher | null>(null);
 
-  const { data, isLoading } = useGetTeachersQuery();
+  const { data, isLoading: isLoadingTeachers } = useGetTeachersQuery();
 
   const teachers = useMemo(
     () =>
@@ -27,13 +28,24 @@ const Teachers = (props: Props) => {
 
   console.log("teachers", teachers);
 
+  const handleClose = () => {
+    setOpenAddNew(false);
+    setFocusedTeacher(null);
+  };
+
   return (
     <Box>
       <CreateTeacherModal
         open={openAddNew}
-        handleClose={() => setOpenAddNew(false)}
+        handleClose={handleClose}
+        focusedTeacher={focusedTeacher}
       />
-      <TeachersTable rows={teachers} toggleAddNew={toggleAddNew} />
+      {isLoadingTeachers && <LinearProgress />}
+      <TeachersTable
+        rows={teachers}
+        toggleAddNew={toggleAddNew}
+        setFocusedTeacher={setFocusedTeacher}
+      />
     </Box>
   );
 };
