@@ -71,7 +71,7 @@ export default function CreateSubjectModal({
         body: data,
       }).unwrap();
       console.log(res);
-      toast.success("subject created successfully");
+      toast.success("subject updated successfully");
       handleClose();
     } catch (error) {
       toast.error("Error");

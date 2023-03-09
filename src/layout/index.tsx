@@ -25,16 +25,16 @@ function Layout() {
       text: "Teachers",
     },
     {
+      icon: <MenuBook />,
+      text: "Subjects",
+    },
+    {
       icon: <MeetingRoom />,
       text: "Classrooms",
     },
     {
       icon: <Groups />,
       text: "Students",
-    },
-    {
-      icon: <MenuBook />,
-      text: "Subjects",
     },
   ];
 
