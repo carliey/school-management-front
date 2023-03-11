@@ -1,7 +1,15 @@
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Grid, TextField, Box, Select, Stack, Typography } from "@mui/material";
+import {
+  Grid,
+  TextField,
+  Box,
+  Select,
+  Stack,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 
 import Table from "@mui/material/Table";
@@ -12,19 +20,25 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Add, DeleteOutline } from "@mui/icons-material";
-import { Classroom, Teacher } from "../../types/types";
-import { useCreateClassroomMutation } from "./classroomApiSlice";
+import { Classroom, Subject, Teacher } from "../../types/types";
+import {
+  useAddSubjectMutation,
+  useCreateClassroomMutation,
+  useRemoveSubjectMutation,
+  useUpdateClassroomMutation,
+} from "./classroomApiSlice";
 import { toast } from "react-hot-toast";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useGetTeachersQuery } from "../teachers/teachersApiSlice";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useGetSubjectsQuery } from "../subjects/subjectApiSlice";
+import LoadingButton from "../../components/LoadingButton";
 
 interface ComponentProps {
   open: boolean;
   handleClose: () => void;
-  focusedSubject?: Classroom | null;
+  focusedClassroom?: Classroom | null;
 }
 
 const validationSchema = yup.object({
@@ -35,9 +49,19 @@ const validationSchema = yup.object({
 export default function AddClassModal({
   open,
   handleClose,
-  focusedSubject,
+  focusedClassroom,
 }: ComponentProps) {
-  const [createClassroom] = useCreateClassroomMutation();
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | number>(
+    ""
+  );
+  const [createClassroom, { isLoading: isCreating }] =
+    useCreateClassroomMutation();
+  const [updateClaroom, { isLoading: isUpdating }] =
+    useUpdateClassroomMutation();
+  const [addSubject, { isLoading: isAddingSubject }] = useAddSubjectMutation();
+  const [removeSubject, { isLoading: isRemovingSubject }] =
+    useRemoveSubjectMutation();
+
   const { data: teachersData } = useGetTeachersQuery();
   const { data: subjectsData } = useGetSubjectsQuery();
 
@@ -53,25 +77,32 @@ export default function AddClassModal({
     [teachersData]
   );
 
-  const subjects = [
-    { id: 1, name: "maths" },
-    { id: 2, name: "english" },
-    { id: 3, name: "physics" },
-  ];
+  const subjects = useMemo(() => {
+    if (subjectsData?.data?.length) {
+      return subjectsData.data;
+    }
+    return [];
+  }, [subjectsData]);
+
+  console.log(focusedClassroom);
 
   const formik = useFormik({
     initialValues: {
-      classroomName: "",
-      teacher: 0,
+      classroomName: focusedClassroom?.name || "",
+      teacher: focusedClassroom?.teacher_id || 0,
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("submitted");
-      handleCreateClassroom({
+      const data = {
         name: values.classroomName,
         teacher_id: values.teacher,
-      });
+      };
+      if (focusedClassroom) {
+        handleUpdateClassroom(data);
+      } else {
+        handleCreateClassroom(data);
+      }
     },
   });
 
@@ -80,10 +111,57 @@ export default function AddClassModal({
       const res = await createClassroom(data).unwrap();
       console.log("res", res);
       toast("classroom created successfully");
+      handleClose();
     } catch (error) {
       console.log("error caught", error);
     }
   };
+
+  const handleUpdateClassroom = async (data: Classroom) => {
+    try {
+      const res = await updateClaroom({
+        id: focusedClassroom?.id,
+        body: { name: data.name, teacher_id: data.teacher_id },
+      }).unwrap();
+      console.log("res", res);
+      toast("classroom updated successfully");
+      handleClose();
+    } catch (error) {
+      console.log("error caught", error);
+    }
+  };
+
+  const handleAddSubject = async () => {
+    try {
+      const res = await addSubject({
+        id: focusedClassroom?.id,
+        body: { subject_id: selectedSubjectId },
+      }).unwrap();
+      console.log(res);
+      toast("classroom created successfully");
+    } catch (error) {
+      toast("error addidng subject");
+      console.log("error");
+    }
+  };
+  const handleRemoveSubject = async (data: Subject) => {
+    try {
+      const res = await removeSubject({
+        id: focusedClassroom?.id,
+        body: { subject_id: data.id },
+      }).unwrap();
+      console.log(res);
+      toast("classroom created successfully");
+    } catch (error) {
+      toast("error addidng subject");
+      console.log("error");
+    }
+  };
+
+  // const handleClose = () => {
+  //   formik.resetForm();
+  //   close();
+  // };
 
   return (
     <div>
@@ -94,7 +172,7 @@ export default function AddClassModal({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle>
-          {Boolean(focusedSubject) ? "Update" : "Create"} Classroom
+          {Boolean(focusedClassroom) ? "Update" : "Create"} Classroom
         </DialogTitle>
         <Box component="form" onSubmit={formik.handleSubmit} p={3}>
           <Grid container spacing={2}>
@@ -138,31 +216,43 @@ export default function AddClassModal({
               </Select>
             </Grid>
           </Grid>
-          {Boolean(focusedSubject) && (
+          {/* add subject area */}
+          {Boolean(focusedClassroom) && (
             <TableContainer component={Paper} sx={{ mt: 2 }}>
               <Stack direction={"row"} gap={1}>
-                <Select displayEmpty fullWidth defaultValue={""} size="small">
+                <Select
+                  displayEmpty
+                  fullWidth
+                  value={selectedSubjectId}
+                  onChange={(e) => setSelectedSubjectId(e.target.value)}
+                  size="small"
+                >
                   <MenuItem value="">Select Subject</MenuItem>
-                  {teachers?.map((item) => (
-                    <MenuItem key={item.id} value={item.name}>
+                  {subjects?.map((item: Subject) => (
+                    <MenuItem key={item.id} value={item.id}>
                       {item.name}
                     </MenuItem>
                   ))}
                 </Select>
-                <Button size="small" variant="contained">
+                <LoadingButton
+                  size="small"
+                  variant="contained"
+                  onClick={handleAddSubject}
+                  loading={isAddingSubject}
+                >
                   Add
-                </Button>
+                </LoadingButton>
               </Stack>
               <Table size="small" aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell>S/N</TableCell>
-                    <TableCell align="center">Subject</TableCell>
+                    <TableCell align="left">Subject</TableCell>
                     <TableCell align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {subjects.map((row, i) => (
+                  {focusedClassroom?.subjects?.map((row, i) => (
                     <TableRow
                       key={i}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -170,9 +260,12 @@ export default function AddClassModal({
                       <TableCell component="th" scope="row">
                         {i + 1}
                       </TableCell>
-                      <TableCell align="center">{row.name}</TableCell>
+                      <TableCell align="left">{row.name}</TableCell>
                       <TableCell align="right">
-                        <DeleteOutline />
+                        <DeleteOutline
+                          color="error"
+                          onClick={() => handleRemoveSubject(row)}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -184,9 +277,14 @@ export default function AddClassModal({
             <Button variant="contained" color="error" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
+            <LoadingButton
+              loading={isCreating || isUpdating}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Stack>
         </Box>
       </Dialog>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   TextField,
@@ -6,6 +6,7 @@ import {
   Stack,
   Typography,
   IconButton,
+  LinearProgress,
 } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -24,7 +25,9 @@ type Props = {};
 
 const Classrooms = (props: Props) => {
   const [openAddNew, setOpenAddNew] = useState(false);
-  const [focusedSubject, setFocusedSubject] = useState<Classroom | null>(null);
+  const [focusedClassroom, setFocusedClassroom] = useState<Classroom | null>(
+    null
+  );
   const { data, isLoading } = useGetClassroomsQuery();
   const { data: teachers } = useGetTeachersQuery();
 
@@ -35,17 +38,30 @@ const Classrooms = (props: Props) => {
     return [];
   }, [data]);
 
+  console.log(classrooms);
+
   const handleClose = () => {
     setOpenAddNew(false);
-    setFocusedSubject(null);
+    setFocusedClassroom(null);
   };
+
+  useEffect(() => {
+    // reset focused classroom
+    if (focusedClassroom) {
+      setFocusedClassroom(
+        classrooms?.find((room: Classroom) => room.id === focusedClassroom.id)
+      );
+    }
+  }, [classrooms]);
+
+  console.log(focusedClassroom);
 
   return (
     <Box>
       <AddClassModal
         open={openAddNew}
         handleClose={handleClose}
-        focusedSubject={focusedSubject}
+        focusedClassroom={focusedClassroom}
       />
       <Box
         display="flex"
@@ -62,6 +78,7 @@ const Classrooms = (props: Props) => {
           Add
         </Button>
       </Box>
+      {isLoading && <LinearProgress />}
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -97,7 +114,7 @@ const Classrooms = (props: Props) => {
                   >
                     <IconButton
                       onClick={() => {
-                        setFocusedSubject(classroom);
+                        setFocusedClassroom(classroom);
                         setOpenAddNew(true);
                       }}
                     >

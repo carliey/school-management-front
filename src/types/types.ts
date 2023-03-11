@@ -32,6 +32,7 @@ export interface Classroom {
   id?: any;
   name: string;
   teacher_id: number;
+  subjects?: Subject[];
 }
 
 export interface Subject {

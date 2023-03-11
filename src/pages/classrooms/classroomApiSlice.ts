@@ -19,7 +19,10 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
       }),
       invalidatesTags: ["Classrooms"],
     }),
-    updateClassroom: builder.mutation<any, { id: number; body: {name: string} }>({
+    updateClassroom: builder.mutation<
+      any,
+      { id: number; body: { name: string; teacher_id: number } }
+    >({
       query: (values) => ({
         url: `/api/classroom/update/${values.id}`,
         method: "PUT",
@@ -27,9 +30,34 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
       }),
       invalidatesTags: ["Classrooms"],
     }),
-    changeTeacher: builder.mutation<any, { id: number; body: {teacher_id: number} }>({
+    changeTeacher: builder.mutation<
+      any,
+      { id: number; body: { teacher_id: number } }
+    >({
       query: (values) => ({
         url: `/api/classroom/change-teacher/${values.id}`,
+        method: "PUT",
+        body: values.body,
+      }),
+      invalidatesTags: ["Classrooms"],
+    }),
+    addSubject: builder.mutation<
+      any,
+      { id: number; body: { subject_id: number | string } }
+    >({
+      query: (values) => ({
+        url: `/api/classroom/add-subject/${values.id}`,
+        method: "PUT",
+        body: values.body,
+      }),
+      invalidatesTags: ["Classrooms"],
+    }),
+    removeSubject: builder.mutation<
+      any,
+      { id: number; body: { subject_id: number | string } }
+    >({
+      query: (values) => ({
+        url: `/api/classroom/remove-subject/${values.id}`,
         method: "PUT",
         body: values.body,
       }),
@@ -47,9 +75,11 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
 });
 
 export const {
- useGetClassroomsQuery,
- useCreateClassroomMutation,
- useUpdateClassroomMutation,
- useChangeTeacherMutation,
- useDeleteTeacherMutation
+  useGetClassroomsQuery,
+  useCreateClassroomMutation,
+  useUpdateClassroomMutation,
+  useChangeTeacherMutation,
+  useAddSubjectMutation,
+  useRemoveSubjectMutation,
+  useDeleteTeacherMutation,
 } = classroomApiSlice;
