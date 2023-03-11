@@ -32,6 +32,7 @@ const ProtectedRoute = ({ user, allowedRoles, children }: ProtectedRoute) => {
   )?.length
     ? true
     : false;
+  console.log("userroles", userRoles);
 
   if (!isAuth) {
     return <Navigate to="/signin" replace />;
@@ -78,12 +79,20 @@ const Router = (props: Props) => {
 
       <Route
         element={
-          <ProtectedRoute user={user} allowedRoles={["admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["admin", "teacher"]}>
             <Layout />
           </ProtectedRoute>
         }
       >
         <Route path="/" element={<Dashboard />} />
+      </Route>
+      <Route
+        element={
+          <ProtectedRoute user={user} allowedRoles={["admin"]}>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="students" element={<Students />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="classrooms" element={<Classrooms />} />
