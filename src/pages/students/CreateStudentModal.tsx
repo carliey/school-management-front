@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-hot-toast";
 import { useCreateStudentMutation } from "./studentApiSlice";
+import LoadingButton from "../../components/LoadingButton";
 
 interface ComponentProps {
   open: boolean;
@@ -26,7 +27,7 @@ export default function CreateStudentModal({
   handleClose,
   classrooms,
 }: ComponentProps) {
-  const [createStudent] = useCreateStudentMutation();
+  const [createStudent, { isLoading: isCreating }] = useCreateStudentMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -170,9 +171,14 @@ export default function CreateStudentModal({
             <Button variant="contained" color="error">
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
+            <LoadingButton
+              loading={isCreating}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Stack>
         </Box>
       </Dialog>

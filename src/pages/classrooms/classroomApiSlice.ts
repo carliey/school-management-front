@@ -2,7 +2,7 @@ import { apiSlice } from "../../redux/apiSlice";
 import { Classroom } from "../../types/types";
 
 const apiSliceWithTags = apiSlice.enhanceEndpoints({
-  addTagTypes: ["Classrooms"],
+  addTagTypes: ["Classrooms", "Teachers"],
 });
 
 export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
@@ -17,7 +17,7 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
         method: "POST",
         body: { ...values },
       }),
-      invalidatesTags: ["Classrooms"],
+      invalidatesTags: ["Classrooms", "Teachers"],
     }),
     updateClassroom: builder.mutation<
       any,
@@ -28,7 +28,7 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
         method: "PUT",
         body: values.body,
       }),
-      invalidatesTags: ["Classrooms"],
+      invalidatesTags: ["Classrooms", "Teachers"],
     }),
     changeTeacher: builder.mutation<
       any,

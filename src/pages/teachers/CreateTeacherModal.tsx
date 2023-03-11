@@ -9,6 +9,7 @@ import { useCreateTeacherMutation } from "./teachersApiSlice";
 import { toast } from "react-hot-toast";
 import { useGetClassroomsQuery } from "../classrooms/classroomApiSlice";
 import { useMemo } from "react";
+import LoadingButton from "../../components/LoadingButton";
 
 interface ComponentProps {
   open: boolean;
@@ -29,7 +30,7 @@ export default function CreateTeacherModal({
   handleClose,
   focusedTeacher,
 }: ComponentProps) {
-  const [createTeacher, { isLoading }] = useCreateTeacherMutation();
+  const [createTeacher, { isLoading: isCreating }] = useCreateTeacherMutation();
   const { data: classroomsRes } = useGetClassroomsQuery();
   const classrooms: any[] = useMemo(() => {
     return classroomsRes?.data?.length ? classroomsRes.data : [];
@@ -203,9 +204,14 @@ export default function CreateTeacherModal({
             <Button variant="contained" color="error" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
+            <LoadingButton
+              loading={isCreating}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Stack>
         </Box>
       </Dialog>

@@ -17,6 +17,7 @@ import {
   useUpdateSubjectMutation,
 } from "./subjectApiSlice";
 import { toast } from "react-hot-toast";
+import LoadingButton from "../../components/LoadingButton";
 
 interface ComponentProps {
   open: boolean;
@@ -132,9 +133,14 @@ export default function CreateSubjectModal({
             <Button variant="contained" color="error" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
+            <LoadingButton
+              loading={isCreating || isUpdating}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               Save
-            </Button>
+            </LoadingButton>
           </Stack>
         </Box>
       </Dialog>
