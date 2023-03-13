@@ -11,6 +11,10 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
       query: () => "/api/classrooms",
       providesTags: ["Classrooms"],
     }),
+    getMyClassrooms: builder.query<any, void>({
+      query: () => "/api/classrooms/mine",
+      providesTags: ["Classrooms"],
+    }),
     createClassroom: builder.mutation<any, Classroom>({
       query: (values) => ({
         url: "/api/classroom/create",
@@ -76,6 +80,7 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
 
 export const {
   useGetClassroomsQuery,
+  useGetMyClassroomsQuery,
   useCreateClassroomMutation,
   useUpdateClassroomMutation,
   useChangeTeacherMutation,

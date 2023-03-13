@@ -11,14 +11,109 @@ import { Button } from "@mui/material";
 import { PowerOff } from "@mui/icons-material";
 import { useAppDispatch } from "../redux/store";
 import { logout } from "../pages/auth/authSlice";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import {
+  Assessment,
+  Dashboard,
+  Group,
+  Groups,
+  MeetingRoom,
+  MenuBook,
+  Note,
+  NoteAlt,
+} from "@mui/icons-material";
+import TeacherAttendance from "../pages/attendance/TeacherAttendance";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../pages/auth/authSlice";
+import {
+  useGetClassroomsQuery,
+  useGetMyClassroomsQuery,
+} from "../pages/classrooms/classroomApiSlice";
+import { useEffect, useMemo } from "react";
 
 type Props = {
   drawerWidth: number;
-  menuItems: { icon: any; text: string }[];
 };
 
-const Sidebar = ({ drawerWidth, menuItems }: Props) => {
+type Menu = {
+  icon: any;
+  text: string;
+};
+
+const Sidebar = ({ drawerWidth }: Props) => {
   const dispatch = useAppDispatch();
+  const user = useSelector(selectCurrentUser);
+  const { data } = useGetMyClassroomsQuery();
+
+  const myClassrooms = useMemo(() => {
+    return data?.data?.length ? data.data : [];
+  }, [data]);
+
+  console.log("user", user);
+  console.log("my classrooms", myClassrooms);
+
+  const adminMenuItems = [
+    {
+      icon: <Dashboard />,
+      text: "Dashboard",
+      link: "dashboard",
+    },
+    {
+      icon: <Group />,
+      text: "Teachers",
+      link: "teachers",
+    },
+    {
+      icon: <MenuBook />,
+      text: "Subjects",
+      link: "subjects",
+    },
+    {
+      icon: <MeetingRoom />,
+      text: "Classrooms",
+      link: "classrooms",
+    },
+    {
+      icon: <Groups />,
+      text: "Students",
+      link: "students",
+    },
+    {
+      icon: <NoteAlt />,
+      text: "Attendance",
+      link: "attendance",
+    },
+    {
+      icon: <Assessment />,
+      text: "Assessments",
+      link: "assessments",
+    },
+  ];
+
+  const teacherMenuItems = [
+    {
+      icon: <NoteAlt />,
+      text: "teacher",
+    },
+    {
+      icon: <NoteAlt />,
+      text: "Attendance",
+    },
+    {
+      icon: <Assessment />,
+      text: "Assessments",
+    },
+  ];
+
+  const isAdmin = user?.roles?.includes("admin");
+  const isTeacher = user?.roles?.includes("teacher");
+
+  const menuItems = useMemo<Menu[] | []>(() => {
+    let items: any[] = [];
+    items = isAdmin ? [...items, ...adminMenuItems] : [...items];
+    items = isTeacher ? [...items, ...teacherMenuItems] : [...items];
+    return items;
+  }, [user]);
 
   return (
     <Drawer
@@ -36,10 +131,12 @@ const Sidebar = ({ drawerWidth, menuItems }: Props) => {
       <Toolbar />
       <Divider />
       <List>
-        {menuItems.map((item, index) => (
+        {menuItems?.map((item: any, index: number) => (
           <ListItem key={index} disablePadding>
             <NavLink
-              to={item.text === "Dashboard" ? "/" : `${item.text}`}
+              to={
+                item.text === "Dashboard" ? "/" : `${item.text.toLowerCase()}`
+              }
               end
               style={({ isActive }) => ({
                 width: "100%",

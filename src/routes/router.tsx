@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Layout from "../layout";
+import Attendance from "../pages/attendance";
+import AdminAttendance from "../pages/attendance/AdminAttendance";
+import TeacherAttendance from "../pages/attendance/TeacherAttendance";
 import { login, logout, selectCurrentUser } from "../pages/auth/authSlice";
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/Signup";
@@ -78,6 +81,7 @@ const Router = (props: Props) => {
       <Route path="signup" element={<SignUp />} />
 
       <Route
+        //shared pages
         element={
           <ProtectedRoute user={user} allowedRoles={["admin", "teacher"]}>
             <Layout />
@@ -85,8 +89,10 @@ const Router = (props: Props) => {
         }
       >
         <Route path="/" element={<Dashboard />} />
+        <Route path="attendance/:classroomId" element={<TeacherAttendance />} />
       </Route>
       <Route
+        // admin pages
         element={
           <ProtectedRoute user={user} allowedRoles={["admin"]}>
             <Layout />
@@ -97,6 +103,7 @@ const Router = (props: Props) => {
         <Route path="teachers" element={<Teachers />} />
         <Route path="classrooms" element={<Classrooms />} />
         <Route path="subjects" element={<Subjects />} />
+        <Route path="attendance" element={<AdminAttendance />} />
       </Route>
 
       <Route path="*" element={<h1>404, page not found</h1>} />
