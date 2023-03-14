@@ -25,8 +25,6 @@ type ProtectedRoute = {
 
 const ProtectedRoute = ({ user, allowedRoles, children }: ProtectedRoute) => {
   //wrapper component for protected routes
-
-  console.log("user", user, allowedRoles);
   const dispatch = useAppDispatch();
   const isAuth = !!user;
   const userRoles = user?.roles?.map((role: string) => role);
@@ -35,7 +33,6 @@ const ProtectedRoute = ({ user, allowedRoles, children }: ProtectedRoute) => {
   )?.length
     ? true
     : false;
-  console.log("userroles", userRoles);
 
   if (!isAuth) {
     return <Navigate to="/signin" replace />;
@@ -58,7 +55,6 @@ const Router = (props: Props) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
-  console.log("user", user);
 
   useEffect(() => {
     //log the user back in with local storage data on login

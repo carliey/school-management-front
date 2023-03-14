@@ -12,7 +12,7 @@ export const classroomApiSlice = apiSliceWithTags.injectEndpoints({
       providesTags: ["Classrooms"],
     }),
     getMyClassrooms: builder.query<any, void>({
-      query: () => "/api/classrooms/mine",
+      query: () => "api/classrooms/mine",
       providesTags: ["Classrooms"],
     }),
     createClassroom: builder.mutation<any, Classroom>({

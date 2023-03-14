@@ -30,14 +30,16 @@ import {
   useGetMyClassroomsQuery,
 } from "../pages/classrooms/classroomApiSlice";
 import { useEffect, useMemo } from "react";
+import { Classroom } from "../types/types";
 
 type Props = {
   drawerWidth: number;
 };
 
-type Menu = {
+type MenuItem = {
   icon: any;
   text: string;
+  link: string;
 };
 
 const Sidebar = ({ drawerWidth }: Props) => {
@@ -45,12 +47,13 @@ const Sidebar = ({ drawerWidth }: Props) => {
   const user = useSelector(selectCurrentUser);
   const { data } = useGetMyClassroomsQuery();
 
-  const myClassrooms = useMemo(() => {
+  const myClassrooms = useMemo<Classroom[] | []>(() => {
     return data?.data?.length ? data.data : [];
   }, [data]);
 
-  console.log("user", user);
   console.log("my classrooms", myClassrooms);
+
+  console.log("data", data);
 
   const adminMenuItems = [
     {
@@ -90,30 +93,40 @@ const Sidebar = ({ drawerWidth }: Props) => {
     },
   ];
 
+  const classItems: MenuItem[] = myClassrooms?.flatMap(
+    (classroom: Classroom) => [
+      {
+        icon: <NoteAlt />,
+        text: `${classroom.name} Attendance`,
+        link: `attendance/${classroom.id}`,
+      },
+      {
+        icon: <Assessment />,
+        text: `${classroom.name} Assessment`,
+        link: `assessment/${classroom.id}`,
+      },
+    ]
+  );
+
+  console.log("classItems", classItems);
   const teacherMenuItems = [
     {
-      icon: <NoteAlt />,
-      text: "teacher",
+      icon: <Dashboard />,
+      text: "Dashboard",
+      link: "dashboard",
     },
-    {
-      icon: <NoteAlt />,
-      text: "Attendance",
-    },
-    {
-      icon: <Assessment />,
-      text: "Assessments",
-    },
+    ...classItems,
   ];
 
   const isAdmin = user?.roles?.includes("admin");
   const isTeacher = user?.roles?.includes("teacher");
 
-  const menuItems = useMemo<Menu[] | []>(() => {
+  const menuItems = useMemo<MenuItem[] | []>(() => {
     let items: any[] = [];
     items = isAdmin ? [...items, ...adminMenuItems] : [...items];
     items = isTeacher ? [...items, ...teacherMenuItems] : [...items];
     return items;
-  }, [user]);
+  }, [myClassrooms]);
 
   return (
     <Drawer
@@ -135,7 +148,7 @@ const Sidebar = ({ drawerWidth }: Props) => {
           <ListItem key={index} disablePadding>
             <NavLink
               to={
-                item.text === "Dashboard" ? "/" : `${item.text.toLowerCase()}`
+                item.text === "Dashboard" ? "/" : `${item.text?.toLowerCase()}`
               }
               end
               style={({ isActive }) => ({
