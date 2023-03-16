@@ -34,6 +34,7 @@ import { Classroom } from "../types/types";
 
 type Props = {
   drawerWidth: number;
+  setPageTitle: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type MenuItem = {
@@ -42,7 +43,7 @@ type MenuItem = {
   link: string;
 };
 
-const Sidebar = ({ drawerWidth }: Props) => {
+const Sidebar = ({ drawerWidth, setPageTitle }: Props) => {
   const dispatch = useAppDispatch();
   const user = useSelector(selectCurrentUser);
   const { data } = useGetMyClassroomsQuery();
@@ -50,10 +51,6 @@ const Sidebar = ({ drawerWidth }: Props) => {
   const myClassrooms = useMemo<Classroom[] | []>(() => {
     return data?.data?.length ? data.data : [];
   }, [data]);
-
-  console.log("my classrooms", myClassrooms);
-
-  console.log("data", data);
 
   const adminMenuItems = [
     {
@@ -108,7 +105,6 @@ const Sidebar = ({ drawerWidth }: Props) => {
     ]
   );
 
-  console.log("classItems", classItems);
   const teacherMenuItems = [
     {
       icon: <Dashboard />,
@@ -144,12 +140,14 @@ const Sidebar = ({ drawerWidth }: Props) => {
       <Toolbar />
       <Divider />
       <List>
-        {menuItems?.map((item: any, index: number) => (
-          <ListItem key={index} disablePadding>
+        {menuItems?.map((item: MenuItem, index: number) => (
+          <ListItem
+            key={index}
+            onClick={() => setPageTitle(item.text.toLocaleUpperCase())}
+            disablePadding
+          >
             <NavLink
-              to={
-                item.text === "Dashboard" ? "/" : `${item.text?.toLowerCase()}`
-              }
+              to={item.text === "Dashboard" ? "/" : `${item.link}`}
               end
               style={({ isActive }) => ({
                 width: "100%",

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Layout from "../layout";
+import TeacherAssessment from "../pages/assessment/TeacherAssessment";
 import Attendance from "../pages/attendance";
 import AdminAttendance from "../pages/attendance/AdminAttendance";
 import TeacherAttendance from "../pages/attendance/TeacherAttendance";
@@ -86,6 +87,7 @@ const Router = (props: Props) => {
       >
         <Route path="/" element={<Dashboard />} />
         <Route path="attendance/:classroomId" element={<TeacherAttendance />} />
+        <Route path="assessment/:classroomId" element={<TeacherAssessment />} />
       </Route>
       <Route
         // admin pages
