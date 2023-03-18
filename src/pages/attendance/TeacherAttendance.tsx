@@ -1,6 +1,7 @@
 import {
   Button,
   Input,
+  LinearProgress,
   Paper,
   Table,
   TableBody,
@@ -15,6 +16,7 @@ import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Student } from "../../types/types";
 import { useGetStudentsByClassroomQuery } from "../students/studentApiSlice";
+import { useGetAttendanceQuery } from "./attendanceApiSlice";
 import TakeAttendanceModal from "./TakeAttendanceModal";
 
 type Props = {};
@@ -32,9 +34,23 @@ const TeacherAttendance = (props: Props) => {
     typeof classroomId === "string" ? parseInt(classroomId) : 0;
 
   const [openTakeAttendance, setOpenTakeAttendance] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toLocaleDateString()
-  );
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const formatDate = (date: Date) => {
+    let day = new Date(date).getDate();
+
+    let month = new Date(date).getUTCMonth();
+
+    let year = new Date(date).getFullYear();
+    return month + 1 + "/" + day + "/" + year;
+  };
+
+  const { data: attendanceData, isFetching: isLoadingAttendance } =
+    useGetAttendanceQuery({
+      classroom_id: classId,
+      date: formatDate(selectedDate),
+    });
+  console.log(attendanceData);
 
   const { data: studentsData, isFetching: isLoadingStudents } =
     useGetStudentsByClassroomQuery(classId);
@@ -45,57 +61,16 @@ const TeacherAttendance = (props: Props) => {
     }
     return [];
   }, [studentsData]);
-
-  console.log(classId);
+  const attendance = useMemo(() => {
+    if (attendanceData?.data?.length) {
+      return attendanceData?.data;
+    }
+    return [];
+  }, [attendanceData]);
 
   const handleClose = () => {
     setOpenTakeAttendance(false);
   };
-
-  const attendance: Attendance[] = [
-    {
-      id: 1,
-      student: {
-        id: 2,
-        firstname: "musa",
-        lastname: "awwal",
-        gender: "f",
-        classroom_id: 2,
-        dob: "23/23/23",
-        soo: "kaduna",
-      },
-      is_present: true,
-      date: "12/12/12",
-    },
-    {
-      id: 1,
-      student: {
-        id: 2,
-        firstname: "bala",
-        lastname: "hadiza",
-        gender: "f",
-        classroom_id: 2,
-        dob: "23/23/23",
-        soo: "kaduna",
-      },
-      is_present: true,
-      date: "12/12/12",
-    },
-    {
-      id: 1,
-      student: {
-        id: 2,
-        firstname: "jamila",
-        lastname: "hasir",
-        gender: "f",
-        classroom_id: 2,
-        dob: "23/23/23",
-        soo: "kaduna",
-      },
-      is_present: true,
-      date: "12/12/12",
-    },
-  ];
 
   return (
     <Box>
@@ -117,10 +92,13 @@ const TeacherAttendance = (props: Props) => {
           Take for Today
         </Button>
       </Stack>
+      {(isLoadingAttendance || isLoadingStudents) && <LinearProgress />}
       <TableContainer component={Paper} sx={{ mt: 3, p: 2 }}>
-        <Typography>Classname attendace for: {selectedDate}</Typography>
+        <Typography>
+          Classname attendace for: {formatDate(selectedDate)}
+        </Typography>
         {!attendance?.length ? (
-          <Typography>attendance for {selectedDate} not found</Typography>
+          <Typography>Attendance for selected date not found</Typography>
         ) : (
           <Table aria-label="simple table">
             <TableHead>
@@ -143,7 +121,15 @@ const TeacherAttendance = (props: Props) => {
                   <TableCell align="left">{row.student.firstname}</TableCell>
                   <TableCell align="left">{row.student.lastname}</TableCell>
                   <TableCell align="left">
-                    {row.is_present ? "present" : "absent"}
+                    {row.is_present ? (
+                      <Typography fontWeight={"bold"} color="green">
+                        Present
+                      </Typography>
+                    ) : (
+                      <Typography fontWeight={"bold"} color="red">
+                        Present
+                      </Typography>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

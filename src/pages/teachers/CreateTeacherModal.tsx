@@ -67,6 +67,8 @@ export default function CreateTeacherModal({
       }
       console.log(res.status);
       toast.success("teacher created successfully");
+      handleClose();
+      formik.resetForm();
     } catch (error) {
       toast.error("error creating teacher");
       console.log(error);
@@ -82,6 +84,7 @@ export default function CreateTeacherModal({
       // }
       // console.log(res.status);
       toast.success("teacher updated successfully");
+      handleClose();
     } catch (error) {
       toast.error("error updating teacher");
       console.log(error);

@@ -41,3 +41,10 @@ export interface Subject {
   name: string;
   description?: string;
 }
+export interface Attendance {
+  id?: any;
+  date: string | DateConstructor | Date;
+  is_present: boolean;
+  classroom_id: number;
+  student_id: number | undefined;
+}

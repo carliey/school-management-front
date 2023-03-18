@@ -19,19 +19,24 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import { Student, Subject } from "../../types/types";
+import { Attendance, Student, Subject } from "../../types/types";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
 import { toast } from "react-hot-toast";
 import LoadingButton from "../../components/LoadingButton";
 import React from "react";
+import { useCreateAttendanceMutation } from "./attendanceApiSlice";
 
 interface ComponentProps {
   open: boolean;
   handleClose: () => void;
   students?: Student[];
 }
+
+type attendance = {
+  is_present: boolean;
+} & Student;
 
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -42,37 +47,50 @@ export default function TakeAttendanceModal({
   handleClose,
   students,
 }: ComponentProps) {
-  //   const handleCreateSubject = async (data: Subject) => {
-  //     try {
-  //       const res = await createSubject(data).unwrap();
-  //       console.log(res);
-  //       toast.success("subject created successfully");
-  //       handleClose();
-  //     } catch (error) {
-  //       toast.error("Error");
-  //       console.log("caught", error);
-  //     }
-  //   };
+  const [createAttendance, { isLoading: isCreatingAttendace }] =
+    useCreateAttendanceMutation();
 
-  //   const handleUpdateSubject = async (data: Subject) => {
-  //     try {
-  //       const res = await updateSubject({
-  //         id: focusedSubject?.id,
-  //         body: data,
-  //       }).unwrap();
-  //       console.log(res);
-  //       toast.success("subject updated successfully");
-  //       handleClose();
-  //     } catch (error) {
-  //       toast.error("Error");
-  //       console.log("caught", error);
-  //     }
-  //   };
+  const [attendanceList, setAttendanceList] = React.useState<attendance[] | []>(
+    students?.map((student: Student) => ({ ...student, is_present: false })) ||
+      []
+  );
 
-  const [value, setValue] = React.useState(true);
+  const handleChange = (value: boolean, index: number, row: attendance) => {
+    let booleanValue =
+      typeof value === "string" ? (value === "true" ? true : false) : value;
 
-  const handleChange = (event: any) => {
-    setValue(event.target.value);
+    let newAttendanceList = attendanceList;
+    let newRow = { ...row, is_present: booleanValue };
+    newAttendanceList[index] = newRow;
+    setAttendanceList([...newAttendanceList]);
+  };
+
+  const handleSave = () => {
+    attendanceList.forEach((item) => {
+      const body = {
+        date: new Date().toLocaleDateString(),
+        is_present: item.is_present,
+        classroom_id: item.classroom_id,
+        student_id: item.id,
+      };
+      console.log(body);
+      handleCreateAttendance(body);
+    });
+  };
+
+  const handleCreateAttendance = async (data: Attendance) => {
+    try {
+      const res = await createAttendance(data).unwrap();
+      console.log(res);
+      if (res.error) {
+        throw new Error(res.error);
+      }
+      toast.success("attendance created successfully");
+      handleClose();
+    } catch (error: any) {
+      toast.error(error?.message || "error");
+      console.log("caught", error);
+    }
   };
 
   return (
@@ -101,7 +119,7 @@ export default function TakeAttendanceModal({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {students?.map((row: Student, i: number) => (
+                {attendanceList?.map((row: attendance, i: number) => (
                   <TableRow
                     key={i}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -114,16 +132,18 @@ export default function TakeAttendanceModal({
                       <RadioGroup
                         row
                         name="controlled-radio-buttons-group"
-                        value={value}
-                        onChange={handleChange}
+                        value={row.is_present}
+                        onChange={(e: any) =>
+                          handleChange(e.target.value, i, row)
+                        }
                       >
                         <FormControlLabel
-                          value={false}
+                          value={true}
                           control={<Radio />}
                           label="present"
                         />
                         <FormControlLabel
-                          value={true}
+                          value={false}
                           control={<Radio />}
                           label="absent"
                         />
@@ -145,6 +165,7 @@ export default function TakeAttendanceModal({
             type="submit"
             variant="contained"
             color="primary"
+            onClick={handleSave}
           >
             Save
           </LoadingButton>

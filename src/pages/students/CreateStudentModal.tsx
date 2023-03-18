@@ -56,6 +56,8 @@ export default function CreateStudentModal({
       }
       console.log(res.status);
       toast.success("Student created successfully");
+      handleClose();
+      formik.resetForm();
     } catch (error) {
       toast.error("error creating Student");
       console.log(error);
