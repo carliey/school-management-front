@@ -50,10 +50,12 @@ const TeacherAttendance = (props: Props) => {
       classroom_id: classId,
       date: formatDate(selectedDate),
     });
-  console.log(attendanceData);
 
-  const { data: studentsData, isFetching: isLoadingStudents } =
-    useGetStudentsByClassroomQuery(classId);
+  const {
+    data: studentsData,
+    isFetching: isFetchingStudents,
+    isLoading: isLoadingStudents,
+  } = useGetStudentsByClassroomQuery(classId);
 
   const students = useMemo(() => {
     if (studentsData?.data?.length) {
@@ -88,9 +90,17 @@ const TeacherAttendance = (props: Props) => {
             onChange={(e: any) => setSelectedDate(e.target.value)}
           />
         </Stack>
-        <Button variant="contained" onClick={() => setOpenTakeAttendance(true)}>
-          Take for Today
-        </Button>
+
+        {formatDate(selectedDate) === formatDate(new Date()) &&
+          !attendance.length && (
+            <Button
+              variant="contained"
+              onClick={() => setOpenTakeAttendance(true)}
+              disabled={isLoadingStudents || isFetchingStudents}
+            >
+              Take for Today
+            </Button>
+          )}
       </Stack>
       {(isLoadingAttendance || isLoadingStudents) && <LinearProgress />}
       <TableContainer component={Paper} sx={{ mt: 3, p: 2 }}>
