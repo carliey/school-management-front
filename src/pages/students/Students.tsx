@@ -45,6 +45,8 @@ const Students = (props: Props) => {
         <Select
           displayEmpty
           onChange={(e: any) => setSelectedClass(e.target.value)}
+          value={selectedClass}
+          variant="standard"
         >
           <MenuItem value={selectedClass}>Select Classroom</MenuItem>
           {classrooms?.map((item: Classroom) => (

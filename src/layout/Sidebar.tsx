@@ -83,11 +83,11 @@ const Sidebar = ({ drawerWidth, setPageTitle }: Props) => {
       text: "Attendance",
       link: "attendance",
     },
-    {
-      icon: <Assessment />,
-      text: "Assessments",
-      link: "assessments",
-    },
+    // {
+    //   icon: <Assessment />,
+    //   text: "Assessments",
+    //   link: "assessments",
+    // },
   ];
 
   const classItems: MenuItem[] = myClassrooms?.flatMap(
