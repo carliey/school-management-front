@@ -137,7 +137,7 @@ const TeacherAttendance = (props: Props) => {
                       </Typography>
                     ) : (
                       <Typography fontWeight={"bold"} color="red">
-                        Present
+                        Absent
                       </Typography>
                     )}
                   </TableCell>

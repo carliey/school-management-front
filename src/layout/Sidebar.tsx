@@ -97,11 +97,11 @@ const Sidebar = ({ drawerWidth, setPageTitle }: Props) => {
         text: `${classroom.name} Attendance`,
         link: `attendance/${classroom.id}`,
       },
-      {
-        icon: <Assessment />,
-        text: `${classroom.name} Assessment`,
-        link: `assessment/${classroom.id}`,
-      },
+      // {
+      //   icon: <Assessment />,
+      //   text: `${classroom.name} Assessment`,
+      //   link: `assessment/${classroom.id}`,
+      // },
     ]
   );
 
