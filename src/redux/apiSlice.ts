@@ -10,7 +10,7 @@ import { logout } from "../pages/auth/authSlice";
 const api_url = import.meta.env.VITE_API_URL;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5050",
+  baseUrl: api_url || "http://localhost:5050",
   prepareHeaders: (headers, { getState }) => {
     // const token = (getState() as RootState).auth.token;
 
