@@ -7,7 +7,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { NavLink } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { PowerOff } from "@mui/icons-material";
 import { useAppDispatch } from "../redux/store";
 import { logout } from "../pages/auth/authSlice";
@@ -137,7 +137,14 @@ const Sidebar = ({ drawerWidth, setPageTitle }: Props) => {
       variant="permanent"
       anchor="left"
     >
-      <Toolbar />
+      <Toolbar>
+        <Typography
+          color="primary.main"
+          sx={{ fontWeight: "600", fontSize: 15, textTransform: "uppercase" }}
+        >
+          Zabib Primary School
+        </Typography>
+      </Toolbar>
       <Divider />
       <List>
         {menuItems?.map((item: MenuItem, index: number) => (
