@@ -37,7 +37,7 @@ export default function CreateStudentModal({
       dob: "",
       soo: "",
       gender: "",
-      classroom_id: null,
+      classroom_id: 0,
     },
     enableReinitialize: true,
     validationSchema: validationSchema,

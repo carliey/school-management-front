@@ -234,7 +234,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 interface ComponentProps {
   rows: Data[];
   toggleAddNew: () => void;
-  setFocusedTeacher: React.Dispatch<React.SetStateAction<Data | null>>;
+  setFocusedTeacher: React.Dispatch<
+    React.SetStateAction<Teacher | Data | null>
+  >;
 }
 
 export default function TeachersTable({

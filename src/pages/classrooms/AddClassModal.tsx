@@ -144,7 +144,7 @@ export default function AddClassModal({
         throw new Error("something went wrong");
       }
     } catch (error) {
-      toast(error.message || "error addidng subject");
+      toast("error addidng subject");
       console.log("error");
     }
   };

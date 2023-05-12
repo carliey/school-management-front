@@ -7,9 +7,21 @@ import TeachersTable from "./TeachersTable";
 
 type Props = {};
 
+interface Data {
+  firstname: string;
+  lastname: string;
+  gender: string;
+  phone: number;
+  email: string;
+  roles?: string[];
+  password?: string;
+}
+
 const Teachers = (props: Props) => {
   const [openAddNew, setOpenAddNew] = useState(false);
-  const [focusedTeacher, setFocusedTeacher] = useState<Teacher | null>(null);
+  const [focusedTeacher, setFocusedTeacher] = useState<Teacher | Data | null>(
+    null
+  );
 
   const { data, isLoading: isLoadingTeachers } = useGetTeachersQuery();
 

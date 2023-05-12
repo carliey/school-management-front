@@ -67,7 +67,7 @@ export default function TakeAttendanceModal({
 
   const handleSave = () => {
     attendanceList.forEach((item) => {
-      const body = {
+      const body: any = {
         date: new Date().toLocaleDateString(),
         is_present: item.is_present,
         classroom_id: item.classroom_id,
