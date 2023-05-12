@@ -119,8 +119,9 @@ export default function SignIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Loading..." : "Sign In"}
           </Button>
           <Grid container>
             <Grid item xs>

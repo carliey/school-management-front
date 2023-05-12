@@ -73,7 +73,7 @@ const AdminAttendance = (props: Props) => {
     <Box>
       <Stack direction={"row"} justifyContent="space-between">
         <Stack direction={"row"} alignItems="center" gap={2}>
-          <Typography>View For:</Typography>
+          <Typography>Attendance For:</Typography>
           <Input
             type="date"
             value={selectedDate}
