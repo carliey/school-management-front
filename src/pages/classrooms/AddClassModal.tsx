@@ -138,9 +138,13 @@ export default function AddClassModal({
         body: { subject_id: selectedSubjectId },
       }).unwrap();
       console.log(res);
-      toast("classroom created successfully");
+      if (res.id) {
+        toast("Subject added successfully");
+      } else {
+        throw new Error("something went wrong");
+      }
     } catch (error) {
-      toast("error addidng subject");
+      toast(error.message || "error addidng subject");
       console.log("error");
     }
   };
@@ -151,7 +155,7 @@ export default function AddClassModal({
         body: { subject_id: data.id },
       }).unwrap();
       console.log(res);
-      toast("classroom created successfully");
+      toast("subject removed successfully");
     } catch (error) {
       toast("error addidng subject");
       console.log("error");
@@ -239,6 +243,7 @@ export default function AddClassModal({
                   variant="contained"
                   onClick={handleAddSubject}
                   loading={isAddingSubject}
+                  type="button"
                 >
                   Add
                 </LoadingButton>
