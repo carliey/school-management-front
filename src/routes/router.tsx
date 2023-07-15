@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Layout from "../layout";
+import AuthLayout from "../layout/AuthLayout";
 import TeacherAssessment from "../pages/assessment/TeacherAssessment";
 import Attendance from "../pages/attendance";
 import AdminAttendance from "../pages/attendance/AdminAttendance";
@@ -74,8 +75,10 @@ const Router = (props: Props) => {
 
   return (
     <Routes>
-      <Route path="signin" element={<SignIn />} />
-      <Route path="signup" element={<SignUp />} />
+      <Route element={<AuthLayout />}>
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
+      </Route>
 
       <Route
         //shared pages
